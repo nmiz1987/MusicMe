@@ -3,14 +3,13 @@ import type { ConfigContext, ExpoConfig } from 'expo/config';
 // These values are tied to EAS. If you would like to use EAS Build or Update
 // on this project while playing with it, then remove these values and run
 // `eas init` and `eas update:configure` to get new values for your account.
-const EAS_UPDATE_URL = 'your-update-url';
-const EAS_PROJECT_ID = 'your-project-id';
-const EAS_APP_OWNER = 'your-name';
+const EAS_UPDATE_URL = '';
+const EAS_APP_OWNER = 'nmiz1987';
 
 // Update this value to something unique in order to be able to build for a
 // physical iOS device.
 const BUNDLE_ID_PREFIX = 'your.bundle.identifier';
-const APP_NAME = 'My App';
+const APP_NAME = 'MusicMe';
 
 const IS_DEV = process.env.APP_VARIANT === 'development';
 const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
@@ -29,8 +28,8 @@ const getAppName = () => {
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: getAppName(),
-  slug: 'expo-template',
-  scheme: 'expo-template',
+  slug: 'musicme',
+  scheme: 'MusicMe',
   owner: EAS_APP_OWNER,
   version: '1.0.0',
   orientation: 'portrait',
@@ -56,7 +55,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: EAS_PROJECT_ID,
+      projectId: '092b0ede-4bb2-4d86-b1e1-d8b50891f2aa',
     },
   },
   web: {

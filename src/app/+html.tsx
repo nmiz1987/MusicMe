@@ -11,7 +11,7 @@ export default function Root({ children }: { children: React.ReactNode }) {
         <ScrollViewStyleReset />
 
         <style dangerouslySetInnerHTML={{ __html: responsiveBackground }} />
-        <title>My App</title>
+        <title>MusicMe</title>
       </head>
       <body style={{ overflowY: 'scroll' }}>{children}</body>
     </html>
