@@ -1,0 +1,10 @@
+node_modules
+.vscode
+.expo
+package.json
+src/assets
+.editorconfig
+.env
+tsconfig.json
+android
+ios
