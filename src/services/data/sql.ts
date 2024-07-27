@@ -25,7 +25,7 @@ export const init = async (db: SQLiteDatabase) => {
 
 const fetchLinks = async () => {
   const res = await networkService.get(
-    'https://de1.api.radio-browser.info/json/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=1500',
+    'https://de1.api.radio-browser.info/json/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=1000',
   );
   if (isOk(res.status)) {
     return res.data as LinksProps[];

@@ -3,10 +3,10 @@ import { Stack, useLocalSearchParams } from 'expo-router';
 import { LinksProps } from '@/constants/interfaces';
 import applicationStore from '@/storage/application-store';
 import Box from '@/elements/Components/Box/Box';
-import { I18nManager, StyleSheet } from 'react-native';
+import { I18nManager, StyleSheet, useColorScheme } from 'react-native';
 import Text from '@/elements/UI/Themed/Text';
 import { Audio } from 'expo-av';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Spacer from '@/elements/Components/Spacer/Spacer';
 import { Image } from 'expo-image';
 import Tag from '@/elements/Components/Tag';
@@ -16,10 +16,20 @@ import Button from '@/elements/UI/Button/Button';
 
 const StationInfo = () => {
   const { stationuuid } = useLocalSearchParams();
+  const [sound, setSound] = useState<Audio.Sound>();
+  const scheme = useColorScheme();
 
   const station = useMemo(() => applicationStore.links.find((link: LinksProps) => link.stationuuid === stationuuid), [stationuuid]);
 
-  const media = useMemo(async () => (await Audio.Sound.createAsync({ uri: station!.url_resolved })).sound, [station]);
+  // const media = useMemo(async () => (await Audio.Sound.createAsync({ uri: station!.url_resolved })).sound, [station]);
+
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
 
   if (!station) {
     return (
@@ -30,13 +40,14 @@ const StationInfo = () => {
   }
 
   const playHandler = async () => {
-    if (media) {
-      (await media).playAsync();
-    }
+    const { sound } = await Audio.Sound.createAsync({ uri: station.url });
+    setSound(sound);
+
+    await sound.playAsync();
   };
 
   const stopHandler = async () => {
-    (await media).stopAsync();
+    sound?.stopAsync();
   };
 
   const blurhash =
@@ -55,14 +66,14 @@ const StationInfo = () => {
         {station.homepage && (
           <Box style={{ flexDirection: 'row', justifyContent: 'center' }}>
             <ExternalLink href={station.homepage}>
-              <AntDesign name="home" size={36} color="black" />
+              <AntDesign name="home" size={36} color={scheme === 'dark' ? 'white' : 'black'} />
             </ExternalLink>
           </Box>
         )}
         <Spacer size={16} />
         <Box style={{ flexDirection: 'row', gap: 4, justifyContent: 'center' }}>
-          <Button style={{ flex: 1 }} title="Play" onPress={playHandler} />
-          <Button style={{ flex: 1 }} title="Stop" onPress={stopHandler} />
+          <Button style={{ flex: 1 }} title="Play" onPress={playHandler} feedbackOnPress />
+          <Button style={{ flex: 1 }} title="Stop" onPress={stopHandler} feedbackOnPress />
         </Box>
         <Spacer size={24} />
 

@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -13,11 +13,14 @@ import { ActivityIndicator, DevSettings } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { OfflineBanner } from '@/elements/Components/OfflineBanner';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider, useQuery } from '@tanstack/react-query';
 import { queryClient } from '@/services/network/queryClient';
 import { SQLiteProvider } from 'expo-sqlite';
 import Text from '@/elements/UI/Themed/Text';
 import Box from '@/elements/Components/Box/Box';
+import networkService, { isOk } from '@/services/network/networkService';
+import { LinksProps } from '@/constants/interfaces';
+import applicationStore from '@/storage/application-store';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -37,26 +40,26 @@ export default function RootLayout() {
     ...FontAwesome.font,
   });
 
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+  const [linksLoaded, setLinksLoaded] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
+    async function fetchLinks() {
+      console.log('start fetching');
+      const res = await networkService.get(
+        'https://de1.api.radio-browser.info/json/stations/search?hidebroken=true&order=clickcount&reverse=true&limit=1000',
+      );
+      if (isOk(res.status)) {
+        console.log('fetched');
+        applicationStore.setLinks(res.data);
+        setLinksLoaded(true);
+        return res.data as LinksProps[];
+      }
+      setLinksLoaded(true);
+
+      return [];
     }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
-  return <RootLayoutNav />;
-}
-
-function RootLayoutNav() {
-  const colorScheme = useColorScheme();
+    fetchLinks();
+  }, []);
 
   useEffect(() => {
     async function fetchUpdate() {
@@ -74,29 +77,40 @@ function RootLayoutNav() {
     if (!__DEV__) fetchUpdate();
   }, []);
 
+  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
+  useEffect(() => {
+    if (error) throw error;
+  }, [error]);
+
+  useEffect(() => {
+    if (loaded && linksLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, linksLoaded]);
+
+  if (!loaded) {
+    return null;
+  }
+
+  return <RootLayoutNav />;
+}
+
+function RootLayoutNav() {
+  const colorScheme = useColorScheme();
+
   return (
-    <React.Suspense
-      fallback={
-        <Box style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" />
-          <Text fontSize={30}>Loading stations...</Text>
-        </Box>
-      }>
-      <SQLiteProvider databaseName="test.db" assetSource={{ assetId: require('../assets/mySQLiteDB.db') }} useSuspense>
-        <ActionSheetProvider useCustomActionSheet>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-              <QueryClientProvider client={queryClient}>
-                <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-                <Stack>
-                  <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-                </Stack>
-                <OfflineBanner />
-              </QueryClientProvider>
-            </ThemeProvider>
-          </GestureHandlerRootView>
-        </ActionSheetProvider>
-      </SQLiteProvider>
-    </React.Suspense>
+    <ActionSheetProvider useCustomActionSheet>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <QueryClientProvider client={queryClient}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+            <Stack>
+              <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+            </Stack>
+            <OfflineBanner />
+          </QueryClientProvider>
+        </ThemeProvider>
+      </GestureHandlerRootView>
+    </ActionSheetProvider>
   );
 }

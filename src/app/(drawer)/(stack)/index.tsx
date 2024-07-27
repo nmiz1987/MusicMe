@@ -1,37 +1,18 @@
 import Screen from '@/elements/Components/Screen/Screen';
 import Spacer from '@/elements/Components/Spacer/Spacer';
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { LinksProps } from '@/constants/interfaces';
-import { useSQLiteContext } from 'expo-sqlite';
 import applicationStore from '@/storage/application-store';
-import { init } from '@/services/data/sql';
 import { observer } from 'mobx-react';
 import Box from '@/elements/Components/Box/Box';
 import { StyleSheet } from 'react-native';
-import { FlashList } from '@shopify/flash-list';
 import TextInput from '@/elements/Components/TextInput/TextInput';
 import Station from '@/elements/Station/Station';
+import { FlatList } from 'react-native-gesture-handler';
+import Text from '@/elements/UI/Themed/Text';
 
 const Home = () => {
-  const db = useSQLiteContext();
   const [searchTerm, setSearchTerm] = useState<string>('');
-
-  useEffect(() => {
-    db.withTransactionAsync(async () => {
-      await init(db);
-    });
-  }, [db]);
-
-  const links = useMemo(() => {
-    return searchTerm.length === 0
-      ? applicationStore.links
-      : applicationStore.links?.filter(
-          link =>
-            link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            link.tags.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            link.country.toLowerCase().includes(searchTerm.toLowerCase()),
-        );
-  }, [searchTerm]);
 
   return (
     <Screen noScroll style={Styles.screen}>
@@ -40,14 +21,32 @@ const Home = () => {
       </Box>
       <Spacer size={12} />
       <Box style={{ flex: 1 }}>
-        <FlashList
+        <FlatList
+          style={Styles.list}
+          contentContainerStyle={Styles.listContainer}
+          showsVerticalScrollIndicator={false}
+          showsHorizontalScrollIndicator={false}
+          ListEmptyComponent={() => {
+            return (
+              <Box style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Text>No stations found</Text>
+              </Box>
+            );
+          }}
+          keyExtractor={(item: LinksProps) => item.stationuuid}
+          data={
+            searchTerm.length === 0
+              ? applicationStore.links
+              : applicationStore.links?.filter(
+                  link =>
+                    link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    link.tags.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    link.country.toLowerCase().includes(searchTerm.toLowerCase()),
+                )
+          }
           renderItem={({ item }) => {
             return <Station key={item.stationuuid} {...item} />;
           }}
-          estimatedItemSize={50}
-          data={links}
-          contentContainerStyle={Styles.list}
-          keyExtractor={(item: LinksProps) => item.stationuuid}
           ItemSeparatorComponent={() => <Spacer size={12} />}
         />
       </Box>
