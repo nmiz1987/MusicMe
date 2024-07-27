@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { Button, I18nManager, InputAccessoryView, Platform, TextInput as RNTextInput } from 'react-native';
+import { Button, InputAccessoryView, Platform, TextInput as RNTextInput } from 'react-native';
 import { TextInputProps } from './TextInput.interfaces';
 import { createStyle } from './TextInput.styles';
 import { t } from '@/i18n';
