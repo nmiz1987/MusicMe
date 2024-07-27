@@ -36,7 +36,6 @@ const TextInput = ({ label, caption, iconLeft, iconRight, onIconLeftPress, onIco
           onFocus={() => setIsInputFocus(true)}
           onBlur={() => setIsInputFocus(false)}
           placeholderTextColor={Styles.placeholderColor.color}
-          textAlign={I18nManager.isRTL ? 'right' : 'left'}
           {...props}
         />
         {iconRight && (

@@ -1,12 +1,15 @@
-import Box from '@/elements/Components/Box/Box';
-import CustomNavigationBar from '@/elements/Components/CustomNavigationBar';
-
+import CustomDrawerNavigationBar from '@/elements/Components/CustomDrawerNavigationBar';
 import CustomNavigationDrawer from '@/elements/Components/CustomNavigationDrawer/CustomNavigationDrawer';
 import { getDrawerTypeForBreakpoint, useBreakpoint } from '@/services/breakpoints';
-import { FontAwesome, Ionicons, MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons';
-import { Link } from 'expo-router';
+import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { DrawerScreenProps } from '@react-navigation/drawer';
 import { Drawer } from 'expo-router/drawer';
-import { StyleSheet } from 'react-native';
+
+export type RootDrawerParamList = {
+  stations: undefined;
+  settings: undefined;
+};
+export type DrawerContentProps = DrawerScreenProps<RootDrawerParamList, 'stations'>;
 
 const DrawerLayout = () => {
   const breakpoint = useBreakpoint();
@@ -17,38 +20,16 @@ const DrawerLayout = () => {
       defaultStatus="closed"
       screenOptions={{
         drawerType,
-        header: props => <CustomNavigationBar {...props} />,
+        header: props => <CustomDrawerNavigationBar {...props} />,
       }}
       drawerContent={props => <CustomNavigationDrawer {...props} />}>
       <Drawer.Screen
-        name="index"
+        name="(stack)"
         options={{
-          headerTitle: 'Home',
-          drawerLabel: 'Home',
+          headerShown: false,
+          headerTitle: 'Online Radio',
+          drawerLabel: 'Online Radio',
           drawerIcon: ({ size, color }) => <Ionicons name="home-outline" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="network"
-        options={{
-          headerTitle: 'Network Info',
-          drawerLabel: 'Network Info',
-          drawerIcon: ({ size, color }) => <Entypo name="network" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="(tabs)"
-        options={{
-          headerTitle: 'Tabs',
-          drawerLabel: 'Tabs',
-          drawerIcon: ({ size, color }) => <MaterialIcons name="border-bottom" size={size} color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Box>
-                <FontAwesome name="info-circle" size={25} color="gray" style={Styles.icon} />
-              </Box>
-            </Link>
-          ),
         }}
       />
       <Drawer.Screen
@@ -64,9 +45,3 @@ const DrawerLayout = () => {
 };
 
 export default DrawerLayout;
-
-const Styles = StyleSheet.create({
-  icon: {
-    marginRight: 15,
-  },
-});

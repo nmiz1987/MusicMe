@@ -18,16 +18,13 @@ export default function Text(props: TextProps) {
   const colors = useCurrentColorScheme();
   const fontStyle = variants[I18nManager.isRTL ? EnumLanguages.Hebrew : EnumLanguages.English][variant ?? 'bodyText1'];
 
+  const isFontSize = typeof fontSize !== 'undefined';
+  const isFontWeight = typeof fontWeight !== 'undefined';
+
   return (
     <DefaultText
       selectable={Platform.OS === 'web'}
-      style={[
-        fontStyle,
-        { color: colors['text-primary'] },
-        style,
-        fontSize ? { fontSize } : { fontSize: fontStyle.fontSize },
-        fontWeight ? { fontWeight } : { fontWeight: fontStyle.fontWeight },
-      ]}
+      style={[fontStyle, { color: colors['text-primary'] }, style, isFontSize && { fontSize }, isFontWeight && { fontWeight }]}
       {...otherProps}
     />
   );

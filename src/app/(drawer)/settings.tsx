@@ -1,15 +1,19 @@
 import Screen from '@/elements/Components/Screen/Screen';
 import ChooseLanguagePopup from '@/elements/Components/ChooseLanguagePopup/ChooseLanguagePopup';
-import ChooseLanguageRadioList from '@/elements/Components/ChooseLanguageRadioList/ChooseLanguageRadioList';
 import Spacer from '@/elements/Components/Spacer/Spacer';
+import Button from '@/elements/UI/Button/Button';
+import { clearDb } from '@/services/data/sql';
+import { useSQLiteContext } from 'expo-sqlite';
 
-export default function Home() {
+export default function Setting() {
+  const db = useSQLiteContext();
+
   return (
     <>
       <Screen>
-        <ChooseLanguageRadioList />
-        <Spacer size={16} />
         <ChooseLanguagePopup />
+        <Spacer size={16} />
+        <Button title="Reset stations" onPress={() => clearDb(db)} />
       </Screen>
     </>
   );

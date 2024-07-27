@@ -1,15 +1,18 @@
 import { large, useBreakpoint } from '@/services/breakpoints';
 import Box from './Box/Box';
-import { DrawerHeaderProps } from '@react-navigation/drawer';
+import { NativeStackHeaderProps } from '@react-navigation/native-stack';
 import Text from '@/elements/UI/Themed/Text';
 import { StyleSheet } from 'react-native';
 import useCurrentColorScheme from '@/hooks/useCurrentColorScheme';
 import { AntDesign } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { DrawerContentProps } from '@/app/(drawer)/_layout';
 
-interface CustomNavigationBarProps extends DrawerHeaderProps {}
+interface CustomStackNavigationBarProps extends NativeStackHeaderProps {}
 
-const CustomNavigationBar = ({ navigation, options }: CustomNavigationBarProps) => {
+const CustomStackNavigationBar = ({ navigation, options }: CustomStackNavigationBarProps) => {
+  const drawerNavigation = useNavigation<DrawerContentProps['navigation']>();
   const showDrawerToggleForBreakpoint = (breakpoint: string) => breakpoint !== large;
   const breakpoint = useBreakpoint();
   const showDrawerToggle = showDrawerToggleForBreakpoint(breakpoint);
@@ -20,18 +23,26 @@ const CustomNavigationBar = ({ navigation, options }: CustomNavigationBarProps) 
   const getTitle = () => {
     if (options?.headerTitle) {
       if (typeof options.headerTitle === 'string') {
-        return <Text variant="h1">{options.headerTitle}</Text>;
+        return (
+          <Text style={Styles.title} variant="h3">
+            {options.headerTitle}
+          </Text>
+        );
       } else if (typeof options.headerTitle === 'function') {
         //@ts-ignore
-        return <>{options.headerTitle()}</>;
+        return <Box style={Styles.title}>{options.headerTitle()}</Box>;
       }
     }
 
     if (options?.title) {
-      return <Text variant="h1">{options.title}</Text>;
+      return (
+        <Text variant="h3" style={Styles.title}>
+          {options.title}
+        </Text>
+      );
     }
 
-    return <Box />;
+    return <Box style={Styles.title} />;
   };
 
   return (
@@ -44,19 +55,25 @@ const CustomNavigationBar = ({ navigation, options }: CustomNavigationBarProps) 
         Styles.shadow,
       ]}>
       {showDrawerToggle ? (
-        <Box onPress={() => navigation.toggleDrawer()} style={Styles.iconContainer}>
+        <Box onPress={() => drawerNavigation.toggleDrawer()} style={Styles.iconContainer}>
           <AntDesign name="menufold" size={24} color={colors.tint} />
         </Box>
       ) : (
         <Box style={Styles.iconContainer} />
       )}
       {getTitle()}
-      <Box style={Styles.iconContainer} />
+      {navigation.canGoBack() ? (
+        <Box onPress={() => navigation.goBack()}>
+          <AntDesign name="arrowleft" size={24} color={colors.tint} />
+        </Box>
+      ) : (
+        <Box style={Styles.iconContainer} />
+      )}
     </Box>
   );
 };
 
-export default CustomNavigationBar;
+export default CustomStackNavigationBar;
 
 const Styles = StyleSheet.create({
   shadow: {
@@ -74,6 +91,10 @@ const Styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 10,
+  },
+  title: {
+    flex: 1,
+    textAlign: 'center',
   },
   iconContainer: {
     height: 50,

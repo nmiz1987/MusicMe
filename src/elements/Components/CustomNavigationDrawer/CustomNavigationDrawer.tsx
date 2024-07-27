@@ -1,6 +1,6 @@
 import ChangeColorMode from '@/elements/UI/ChangeColorMode';
-import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { Linking, StyleSheet } from 'react-native';
+import { DrawerContentComponentProps, DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
+import { StyleSheet } from 'react-native';
 import Box from '../Box/Box';
 import Spacer from '../Spacer/Spacer';
 
@@ -13,7 +13,6 @@ function CustomNavigationDrawer(props: DrawerContentComponentProps) {
       </Box>
       <Spacer size={16} />
       <DrawerItemList {...props} />
-      <DrawerItem label="Help" onPress={() => Linking.openURL('https://mywebsite.com/help')} />
     </DrawerContentScrollView>
   );
 }
