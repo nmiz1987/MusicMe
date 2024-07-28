@@ -16,8 +16,12 @@ const TextInput = ({ label, caption, iconLeft, iconRight, onIconLeftPress, onIco
 
   return (
     <Box withoutFeedback onPress={() => inputRef.current?.focus()}>
-      {label && <Text>{label}</Text>}
-      <Spacer size={8} />
+      {label && (
+        <>
+          <Text>{label}</Text>
+          <Spacer size={8} />
+        </>
+      )}
       {Platform.OS === 'ios' && (
         <InputAccessoryView nativeID="inputID">
           <Button title={t('app.keyboard')} onPress={() => inputRef?.current?.blur()} />

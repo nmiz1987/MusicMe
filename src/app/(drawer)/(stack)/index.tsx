@@ -1,31 +1,54 @@
 import Screen from '@/elements/Components/Screen/Screen';
 import Spacer from '@/elements/Components/Spacer/Spacer';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { LinksProps } from '@/constants/interfaces';
 import applicationStore from '@/storage/application-store';
 import { observer } from 'mobx-react';
 import Box from '@/elements/Components/Box/Box';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, RefreshControl, useColorScheme } from 'react-native';
 import TextInput from '@/elements/Components/TextInput/TextInput';
-import Station from '@/elements/Station/Station';
 import { FlatList } from 'react-native-gesture-handler';
 import Text from '@/elements/UI/Themed/Text';
+import Station from '@/elements/Components/Station/Station';
+import { fetchLinks } from '@/app/api/fetchLinks';
+import { FontAwesome } from '@expo/vector-icons';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const scheme = useColorScheme();
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchLinks().then(() => setRefreshing(false));
+  }, []);
+
+  if (refreshing) {
+    return (
+      <Box style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+        <Text style={{ textAlign: 'center' }}>Reloading the station list...</Text>
+      </Box>
+    );
+  }
 
   return (
     <Screen noScroll style={Styles.screen}>
-      <Box style={{ paddingHorizontal: 16 }}>
-        <TextInput value={searchTerm} onChangeText={(input: string) => setSearchTerm(input)} />
+      <Spacer size={12} />
+      <Box style={{ paddingHorizontal: 16, flexDirection: 'row', gap: 8, alignItems: 'center' }}>
+        <Box style={{ flex: 1 }}>
+          <TextInput placeholder="Search by name, tag and country..." value={searchTerm} onChangeText={(input: string) => setSearchTerm(input)} />
+        </Box>
+        <Box onPress={onRefresh} style={Styles.refreshContainer}>
+          <FontAwesome name="refresh" size={24} color={scheme === 'dark' ? 'white' : 'black'} />
+        </Box>
       </Box>
       <Spacer size={12} />
       <Box style={{ flex: 1 }}>
         <FlatList
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
           style={Styles.list}
           contentContainerStyle={Styles.listContainer}
-          showsVerticalScrollIndicator={false}
-          showsHorizontalScrollIndicator={false}
           ListEmptyComponent={() => {
             return (
               <Box style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -61,10 +84,17 @@ const Styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   list: {
-    paddingHorizontal: 16,
     paddingVertical: 20,
   },
   listContainer: {
-    flex: 1,
+    paddingHorizontal: 16,
+  },
+  refreshContainer: {
+    borderRadius: 12,
+    aspectRatio: 1,
+    width: 50,
+
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

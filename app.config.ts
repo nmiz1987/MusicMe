@@ -19,8 +19,8 @@ const getBundleID = () => {
   return `${BUNDLE_ID_PREFIX}.app`;
 };
 const getAppName = () => {
-  if (IS_DEV) return `${APP_NAME} (Dev)`;
-  if (IS_PREVIEW) return `${APP_NAME} (Prev)`;
+  if (IS_DEV) return 'MusicMe-(Dev)';
+  if (IS_PREVIEW) return 'MusicMe-(Prev)';
   return APP_NAME;
 };
 
@@ -58,6 +58,21 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     favicon: './src/assets/images/favicon.png',
   },
   plugins: [
+    [
+      'expo-build-properties',
+      {
+        android: {
+          compileSdkVersion: 34,
+          targetSdkVersion: 34,
+          buildToolsVersion: '34.0.0',
+          usesCleartextTraffic: true,
+        },
+        ios: {
+          deploymentTarget: '13.4',
+          usesCleartextTraffic: true,
+        },
+      },
+    ],
     'expo-asset',
     [
       'expo-router',

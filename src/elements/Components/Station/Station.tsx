@@ -1,11 +1,11 @@
 import { LinksProps } from '@/constants/interfaces';
-import Box from '../Components/Box/Box';
 import Text from '@/elements/UI/Themed/Text';
 import { Image } from 'expo-image';
-import Tag from '../Components/Tag';
 import { Link } from 'expo-router';
 import { createStyle } from './Station.styles';
 import useCurrentColorScheme from '@/hooks/useCurrentColorScheme';
+import Box from '../Box/Box';
+import Tag from '../Tag';
 
 interface StationProps extends LinksProps {}
 

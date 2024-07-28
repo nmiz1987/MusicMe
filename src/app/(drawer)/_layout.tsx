@@ -1,7 +1,7 @@
 import CustomDrawerNavigationBar from '@/elements/Components/CustomDrawerNavigationBar';
 import CustomNavigationDrawer from '@/elements/Components/CustomNavigationDrawer/CustomNavigationDrawer';
 import { getDrawerTypeForBreakpoint, useBreakpoint } from '@/services/breakpoints';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { DrawerScreenProps } from '@react-navigation/drawer';
 import { Drawer } from 'expo-router/drawer';
 
@@ -30,14 +30,6 @@ const DrawerLayout = () => {
           headerTitle: 'Online Radio',
           drawerLabel: 'Online Radio',
           drawerIcon: ({ size, color }) => <Ionicons name="home-outline" size={size} color={color} />,
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        options={{
-          headerTitle: 'Settings',
-          drawerLabel: 'Settings',
-          drawerIcon: ({ size, color }) => <AntDesign name="setting" size={size} color={color} />,
         }}
       />
     </Drawer>
