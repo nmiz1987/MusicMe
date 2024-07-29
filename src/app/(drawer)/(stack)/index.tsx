@@ -24,14 +24,6 @@ const Home = () => {
     fetchLinks().then(() => setRefreshing(false));
   }, []);
 
-  if (refreshing) {
-    return (
-      <Box style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
-        <Text style={{ textAlign: 'center' }}>Reloading the station list...</Text>
-      </Box>
-    );
-  }
-
   return (
     <Screen noScroll style={Styles.screen}>
       <Spacer size={12} />
@@ -44,35 +36,41 @@ const Home = () => {
         </Box>
       </Box>
       <Spacer size={12} />
-      <Box style={{ flex: 1 }}>
-        <FlatList
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-          style={Styles.list}
-          contentContainerStyle={Styles.listContainer}
-          ListEmptyComponent={() => {
-            return (
-              <Box style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Text>No stations found</Text>
-              </Box>
-            );
-          }}
-          keyExtractor={(item: LinksProps) => item.stationuuid}
-          data={
-            searchTerm.length === 0
-              ? applicationStore.links
-              : applicationStore.links?.filter(
-                  link =>
-                    link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    link.tags.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    link.country.toLowerCase().includes(searchTerm.toLowerCase()),
-                )
-          }
-          renderItem={({ item }) => {
-            return <Station key={item.stationuuid} {...item} />;
-          }}
-          ItemSeparatorComponent={() => <Spacer size={12} />}
-        />
-      </Box>
+      {refreshing ? (
+        <Box style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+          <Text style={{ textAlign: 'center' }}>Reloading the station list...</Text>
+        </Box>
+      ) : (
+        <Box style={{ flex: 1 }}>
+          <FlatList
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            style={Styles.list}
+            contentContainerStyle={Styles.listContainer}
+            ListEmptyComponent={() => {
+              return (
+                <Box style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <Text>No stations found</Text>
+                </Box>
+              );
+            }}
+            keyExtractor={(item: LinksProps) => item.stationuuid}
+            data={
+              searchTerm.length === 0
+                ? applicationStore.links
+                : applicationStore.links?.filter(
+                    link =>
+                      link.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      link.tags.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      link.country.toLowerCase().includes(searchTerm.toLowerCase()),
+                  )
+            }
+            renderItem={({ item }) => {
+              return <Station key={item.stationuuid} {...item} />;
+            }}
+            ItemSeparatorComponent={() => <Spacer size={12} />}
+          />
+        </Box>
+      )}
     </Screen>
   );
 };

@@ -59,6 +59,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     [
+      'expo-av',
+      {
+        microphonePermission: 'Allow MusicMe to access your microphone, we promise to not record anything without your consent.',
+      },
+    ],
+    [
       'expo-build-properties',
       {
         android: {
@@ -81,18 +87,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     'expo-localization',
-    [
-      'expo-document-picker',
-      {
-        iCloudContainerEnvironment: 'Production',
-      },
-    ],
-    [
-      'expo-image-picker',
-      {
-        photosPermission: 'The app accesses your photos to let you share them with your friends.',
-      },
-    ],
   ],
   experiments: {
     typedRoutes: true,
